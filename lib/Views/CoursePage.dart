@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Config/constants.dart';
 import 'package:flutter_tutorial/Models/SubjectModels.dart';
@@ -97,25 +98,28 @@ class CoursesPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                   File(course.photo!),
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(
-                                        Icons.image_not_supported_rounded,
-                                        color: primaryColor,
-                                      ),
-                                    );
-                                  },
-                                ),
+                                child:buildCourseImage('${course.photo!}'),
+
+
+                                // child: Image.file(
+                                //    File(course.photo!),
+                                //   width: 60,
+                                //   height: 60,
+                                //   fit: BoxFit.cover,
+                                //   errorBuilder: (context, error, stackTrace) {
+                                //     return Container(
+                                //       width: 60,
+                                //       height: 60,
+                                //       decoration: BoxDecoration(
+                                //         borderRadius: BorderRadius.circular(10),
+                                //       ),
+                                //       child: const Icon(
+                                //         Icons.image_not_supported_rounded,
+                                //         color: primaryColor,
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -160,7 +164,7 @@ class CoursesPage extends StatelessWidget {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    _showDeleteCourseDialog(course.id);
+                                    // _showDeleteCourseDialog(course.id);
                                   },
                                   child: Icon(
                                     Icons.delete,
@@ -361,17 +365,69 @@ class CoursesPage extends StatelessWidget {
     );
   }
 
-  void _showDeleteCourseDialog(int courseId) {
-    Get.defaultDialog(
-      title: 'Delete Course',
-      content: Text('Are you sure you want to delete this course?'),
-      textCancel: 'Cancel',
-      textConfirm: 'Delete',
-      onCancel: () {},
-      onConfirm: () {
-        _controller.deleteCourse(courseId);
-        Get.back();
-      },
-    );
+  Widget buildCourseImage(String? photoPath) {
+    if (photoPath == null || photoPath.isEmpty) {
+      print("imaggeeeeeeeeeee$photoPath!");
+      // ✅ في حالة عدم وجود صورة، عرض أيقونة افتراضية
+      return Container(
+        height: 60,
+        width: 60,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(Icons.image_not_supported_rounded, color: Colors.grey),
+      );
+    } else if (photoPath.startsWith("http") || photoPath.startsWith("https")|| photoPath.contains("media/courses/")) {
+      // ✅ إذا كانت الصورة من API، استخدم `CachedNetworkImage`
+      print(photoPath);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl: '${baseURL+photoPath!}',
+          fit: BoxFit.cover,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+          height: 60,
+          width: 60,
+        ),
+      );
+    } else {
+      // ✅ إذا كانت الصورة محلية، استخدم `Image.file`
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.file(
+          File(photoPath),
+          fit: BoxFit.cover,
+          height: 60,
+          width: 60,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              height: 60,
+              width: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.broken_image, color: Colors.grey),
+            );
+          },
+        ),
+      );
+    }
   }
+
+  // void _showDeleteCourseDialog(int courseId) {
+  //   Get.defaultDialog(
+  //     title: 'Delete Course',
+  //     content: Text('Are you sure you want to delete this course?'),
+  //     textCancel: 'Cancel',
+  //     textConfirm: 'Delete',
+  //     onCancel: () {},
+  //     onConfirm: () {
+  //       _controller.deleteCourse(courseId);
+  //       Get.back();
+  //     },
+  //   );
+  // }
 }
