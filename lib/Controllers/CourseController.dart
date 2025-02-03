@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_tutorial/APIServices/DynamicApiServices.dart';
 import 'package:flutter_tutorial/Config/constants.dart';
-import 'package:flutter_tutorial/Helpers/NetworkHelper.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
 import '../Helpers/SQliteDbHelper.dart';
