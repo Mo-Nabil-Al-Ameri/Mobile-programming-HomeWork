@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/core/Helper/AppConstant/AppColorConstant.dart';
 import 'package:flutter_tutorial/core/Helper/AppConstant/AppTextStyleConstant.dart';
-import 'package:get/get.dart';
 
 class CustomCard extends StatelessWidget {
   String? txtStatus, txtName, txtAddress, imageUrl;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Config/constants.dart';
 import 'package:flutter_tutorial/Models/SubjectModels.dart';
 import 'package:flutter_tutorial/Views/CourseDetailsPage.dart';
 import 'package:get/get.dart';
@@ -25,9 +24,11 @@ class CoursesPage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(onPressed: (){
-            _controller.getCourseList();
-          }, icon: Icon(Icons.refresh))
+          IconButton(
+              onPressed: () {
+                _controller.getCourseList();
+              },
+              icon: Icon(Icons.refresh))
         ],
         centerTitle: true,
         backgroundColor: primaryColor,
@@ -98,7 +99,7 @@ class CoursesPage extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.file(
-                                   File(course.photo!),
+                                  File(course.photo!),
                                   width: 60,
                                   height: 60,
                                   fit: BoxFit.cover,
@@ -197,8 +198,9 @@ class CoursesPage extends StatelessWidget {
     var subjects = Get.find<HomeController>().subjects;
     final _formKey = GlobalKey<FormState>();
     Rx<File?> courseImage = Rx<File?>(null);
-    if(subjects.length<=0){
-      subjects.add(SubjectModel(title: 'Flutter', slug: 'Programming', photo: '', totalCourses: 1));
+    if (subjects.length <= 0) {
+      subjects.add(SubjectModel(
+          title: 'Flutter', slug: 'Programming', photo: '', totalCourses: 1));
     }
     var titleController = TextEditingController();
     var overviewController = TextEditingController();
@@ -207,27 +209,26 @@ class CoursesPage extends StatelessWidget {
     if (course != null) {
       titleController.text = course.title;
       overviewController.text = course.overview;
-      if(subjects.length<=0){
-        subjects.add(SubjectModel(title: 'Flutter', slug: 'Programming', photo: '', totalCourses: 1));
-      }else{
-
+      if (subjects.length <= 0) {
+        subjects.add(SubjectModel(
+            title: 'Flutter', slug: 'Programming', photo: '', totalCourses: 1));
+      } else {
         selectedSubject = subjects
             .firstWhere(
               (element) => element.title == course.subject,
-          orElse: () =>subjects.first, // Fallback subject
-        )
+              orElse: () => subjects.first, // Fallback subject
+            )
             .slug;
-        if(selectedSubject==null){
-          selectedSubject=subjects.first.slug;
+        if (selectedSubject == null) {
+          selectedSubject = subjects.first.slug;
         }
         print(selectedSubject);
       }
-
     }
 
     Future<void> _pickImage() async {
       final pickedFile =
-      await ImagePicker().pickImage(source: ImageSource.gallery);
+          await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         courseImage.value = File(pickedFile.path);
       }
@@ -246,9 +247,9 @@ class CoursesPage extends StatelessWidget {
                   value: selectedSubject,
                   items: subjects
                       .map((e) => DropdownMenuItem(
-                    value: e.slug,
-                    child: Text(e.title),
-                  ))
+                            value: e.slug,
+                            child: Text(e.title),
+                          ))
                       .toList(),
                   onChanged: (value) {
                     selectedSubject = value!;
@@ -298,28 +299,29 @@ class CoursesPage extends StatelessWidget {
                 Obx(() {
                   return courseImage.value != null
                       ? Image.file(
-                    courseImage.value!,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  )
+                          courseImage.value!,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        )
                       : course != null && course.photo != null
-                      ? Image.file(File(course.photo!),
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text("No image available"),
-                      );
-                    },
-                  )
-                      : Text('No image selected');
+                          ? Image.file(
+                              File(course.photo!),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text("No image available"),
+                                );
+                              },
+                            )
+                          : Text('No image selected');
                 }),
               ],
             ),

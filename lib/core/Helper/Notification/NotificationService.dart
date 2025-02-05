@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../AppConstant/AppColorConstant.dart';
 import 'dart:io' show File, Platform;
@@ -6,7 +5,6 @@ import 'dart:io' show File, Platform;
 import 'package:rxdart/subjects.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:intl/intl.dart';
 
 class NotificationServices {
   //

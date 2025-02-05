@@ -24,19 +24,16 @@ class _FriendTextFieldsState extends State<FriendTextFields> {
 
   @override
   Widget build(BuildContext context) {
-
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-     // _nameController?.text = _MyFormState.friendsList[widget.index] ?? '';
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // _nameController?.text = _MyFormState.friendsList[widget.index] ?? '';
     });
 
     return TextFormField(
       controller: _nameController,
-     // onChanged: (v) => _MyFormState.friendsList[widget.index] = v,
-      decoration: InputDecoration(
-          hintText: 'Enter your friend\'s name'
-      ),
-      validator: (v){
-        if(v!.trim().isEmpty) return 'Please enter something';
+      // onChanged: (v) => _MyFormState.friendsList[widget.index] = v,
+      decoration: InputDecoration(hintText: 'Enter your friend\'s name'),
+      validator: (v) {
+        if (v!.trim().isEmpty) return 'Please enter something';
         return null;
       },
     );
