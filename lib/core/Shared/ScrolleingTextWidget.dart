@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class ScrollingText extends StatefulWidget {
-  final String ?text;
+  final String? text;
   final TextStyle? textStyle;
   final Axis? scrollAxis;
   final double? ratioOfBlankToScreen;
@@ -11,9 +11,11 @@ class ScrollingText extends StatefulWidget {
   ScrollingText({
     @required this.text,
     this.textStyle,
-    this.scrollAxis: Axis.horizontal,
-    this.ratioOfBlankToScreen: 0.25,
-  }) : assert(text != null,);
+    this.scrollAxis = Axis.horizontal,
+    this.ratioOfBlankToScreen = 0.25,
+  }) : assert(
+          text != null,
+        );
 
   @override
   State<StatefulWidget> createState() {
@@ -54,17 +56,17 @@ class ScrollingTextState extends State<ScrollingText>
         if (pixels + _moveDistance >= maxScrollExtent) {
           if (widget.scrollAxis == Axis.horizontal) {
             position = (maxScrollExtent -
-                screenWidth! * widget.ratioOfBlankToScreen! +
-                widgetWidth) /
-                2 -
+                        screenWidth! * widget.ratioOfBlankToScreen! +
+                        widgetWidth) /
+                    2 -
                 widgetWidth +
                 pixels -
                 maxScrollExtent;
           } else {
             position = (maxScrollExtent -
-                screenHeight! * widget.ratioOfBlankToScreen! +
-                widgetHeight) /
-                2 -
+                        screenHeight! * widget.ratioOfBlankToScreen! +
+                        widgetHeight) /
+                    2 -
                 widgetHeight +
                 pixels -
                 maxScrollExtent;
@@ -98,9 +100,9 @@ class ScrollingTextState extends State<ScrollingText>
     }
     return Center(
         child: Text(
-          widget.text!,
-          style: widget.textStyle,
-        ));
+      widget.text!,
+      style: widget.textStyle,
+    ));
   }
 
   Widget getCenterChild() {

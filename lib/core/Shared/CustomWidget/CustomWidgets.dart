@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/core/Helper/AppConstant/AppTextStyleConstant.dart';
 import 'package:get/get.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppTextStyleConstant.dart';
 import '../../Helper/AppConstant/AppColorConstant.dart';
 import 'MyCustomWidgets.dart';
 
@@ -698,14 +698,17 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isBox == true
-        ? RaisedButton(
-            elevation: 1,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        ? ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              backgroundColor: btcolor ?? AppColor.white,
+              disabledBackgroundColor: Colors.white,
+              padding: EdgeInsets.all(0.0),
+            ),
             onPressed: onTap,
-            color: btcolor ?? AppColor.white,
-            textColor: Colors.white,
-            padding: EdgeInsets.all(0.0),
             child: Container(
               alignment: Alignment.center,
 //        height: _height! / 20,
@@ -745,13 +748,17 @@ class CustomButton extends StatelessWidget {
             ),
           )
         : isCirculer == true
-            ? RaisedButton(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+            ? ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  backgroundColor: color ?? AppColor.primaryColorBoxTrance,
+                  disabledBackgroundColor: AppColor.primaryColor,
+                  padding: EdgeInsets.all(0.0),
+                ),
                 onPressed: onTap,
-                textColor: AppColor.primaryColor,
-                padding: EdgeInsets.all(0.0),
                 child: Container(
                   alignment: Alignment.center,
 //        height: _height! / 20,
@@ -789,12 +796,16 @@ class CustomButton extends StatelessWidget {
                   ),
                 ),
               )
-            : RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
+            : ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  backgroundColor: color ?? AppColor.primaryColorBoxTrance,
+                  disabledBackgroundColor: AppColor.primaryColor,
+                  padding: EdgeInsets.all(0.0),
+                ),
                 onPressed: onTap,
-                textColor: AppColor.primaryColor,
-                padding: EdgeInsets.all(0.0),
                 child: Container(
                   alignment: Alignment.center,
 //        height: _height! / 20,

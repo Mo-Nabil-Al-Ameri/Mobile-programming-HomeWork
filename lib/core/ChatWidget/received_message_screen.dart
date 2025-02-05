@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppColorConstant.dart';
+import '../Helper/AppConstant/AppColorConstant.dart';
 import '../Helper/AppConstant/AppTextStyleConstant.dart';
 
 class ReceivedMessageScreen extends StatelessWidget {

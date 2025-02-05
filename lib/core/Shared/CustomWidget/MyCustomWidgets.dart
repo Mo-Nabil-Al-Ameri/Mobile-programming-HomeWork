@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/core/Helper/AppConstant/AppColorConstant.dart';
+import 'package:flutter_tutorial/core/Helper/AppConstant/AppTextStyleConstant.dart';
 import 'package:get/get.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppColorConstant.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppTextStyleConstant.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 

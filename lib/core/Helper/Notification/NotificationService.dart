@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppColorConstant.dart';
+import '../AppConstant/AppColorConstant.dart';
 import 'dart:io' show File, Platform;
 
 import 'package:rxdart/subjects.dart';
@@ -42,22 +42,29 @@ class NotificationServices {
     return scheduledDate;
   }
 
-  initializePlatformSpecifics() {
+  void initializePlatformSpecifics() {
     var initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = IOSInitializationSettings(
+        const AndroidInitializationSettings('app_icon');
+
+    var initializationSettingsIOS = const DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification: (id, title, body, payload) async {
-        ReceivedNotification receivedNotification = ReceivedNotification(
-            id: id, title: title, body: body, payload: payload);
-        didReceivedLocalNotificationSubject.add(receivedNotification);
-      },
+      requestSoundPermission: true, // يمكنك تغييره حسب الحاجة
     );
 
-    initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) async {
+        String? payload = notificationResponse.payload;
+        // معالجة عند الضغط على الإشعار
+      },
+    );
   }
 
   _requestIOSPermission() {
@@ -79,7 +86,9 @@ class NotificationServices {
 
   setOnNotificationClick(Function onNotificationClick) async {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {
+        onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) async {
+      String? payload = notificationResponse.payload;
       onNotificationClick(payload);
     });
   }
@@ -95,7 +104,7 @@ class NotificationServices {
       timeoutAfter: 50000,
       styleInformation: DefaultStyleInformation(true, true),
     );
-    var iosChannelSpecifics = IOSNotificationDetails();
+    var iosChannelSpecifics = DarwinNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         android: androidChannelSpecifics, iOS: iosChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
@@ -108,49 +117,122 @@ class NotificationServices {
   }
 
   Future<void> showDailyAtTime(
-      {String? title, String? body, required Time setTime}) async {
-    var time = setTime;
-    var androidChannelSpecifics = AndroidNotificationDetails(
-      'CHANNEL_ID 4',
-      'CHANNEL_NAME 4',
-      // "CHANNEL_DESCRIPTION 4",
+      {String? title, String? body, required tz.TZDateTime setTime}) async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    // **إعدادات Android**
+    var androidChannelSpecifics = const AndroidNotificationDetails(
+      'CHANNEL_ID_4',
+      'CHANNEL_NAME_4',
+      channelDescription: 'الوصف التفصيلي للقناة',
       importance: Importance.max,
       priority: Priority.high,
     );
-    var iosChannelSpecifics = IOSNotificationDetails();
+
+    // **إعدادات iOS**
+    var iosChannelSpecifics = const DarwinNotificationDetails();
+
     var platformChannelSpecifics = NotificationDetails(
-        android: androidChannelSpecifics, iOS: iosChannelSpecifics);
-    await flutterLocalNotificationsPlugin.showDailyAtTime(
-      0,
-      '$title ${time.hour}:${time.minute}.${time.second}',
-      body, //null
-      time,
+      android: androidChannelSpecifics,
+      iOS: iosChannelSpecifics,
+    );
+
+    // **تهيئة المنطقة الزمنية**
+    tz.initializeTimeZones();
+
+    // **تحديد موعد التكرار اليومي**
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      setTime.hour,
+      setTime.minute,
+      setTime.second,
+    );
+
+    // **إذا كان الوقت المحدد قد فات اليوم، جدوله ليوم غد**
+    final scheduledTime = scheduledDate.isBefore(now)
+        ? scheduledDate.add(const Duration(days: 1))
+        : scheduledDate;
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0, // معرف الإشعار
+      '$title ${setTime.hour}:${setTime.minute}.${setTime.second}', // عنوان الإشعار
+      body, // محتوى الإشعار
+      scheduledTime, // وقت الإشعار
       platformChannelSpecifics,
-      payload: 'Test Payload',
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time, // لتكرار يومي
     );
   }
 
   Future<void> showWeeklyAtDayTime(
-      {required Time setTime, String? title, String? body}) async {
-    var time = Time(21, 5, 0);
-    var androidChannelSpecifics = AndroidNotificationDetails(
-      'CHANNEL_ID 5',
-      'CHANNEL_NAME 5',
-      // "CHANNEL_DESCRIPTION 5",
+      {required tz.TZDateTime setTime,
+      String? title,
+      String? body,
+      required int dayOfWeek}) async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    // **إعدادات Android**
+    var androidChannelSpecifics = const AndroidNotificationDetails(
+      'CHANNEL_ID_5',
+      'CHANNEL_NAME_5',
+      channelDescription: 'الوصف التفصيلي للقناة',
       importance: Importance.max,
       priority: Priority.high,
     );
-    var iosChannelSpecifics = IOSNotificationDetails();
+
+    // **إعدادات iOS**
+    var iosChannelSpecifics = const DarwinNotificationDetails();
+
     var platformChannelSpecifics = NotificationDetails(
-        android: androidChannelSpecifics, iOS: iosChannelSpecifics);
-    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-      0,
-      '$title ${time.hour}:${time.minute}.${time.second}',
-      body, //null
-      Day.saturday,
-      time,
+      android: androidChannelSpecifics,
+      iOS: iosChannelSpecifics,
+    );
+
+    // **تهيئة المنطقة الزمنية**
+    tz.initializeTimeZones();
+
+    final now = tz.TZDateTime.now(tz.local);
+
+    // **تحديد موعد التكرار الأسبوعي**
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      setTime.hour,
+      setTime.minute,
+      setTime.second,
+    );
+
+    // **حساب اليوم الصحيح للإشعار الأسبوعي**
+    while (scheduledDate.weekday != dayOfWeek) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    // **إذا كان الوقت المحدد قد فات اليوم، جدوله للأسبوع القادم**
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 7));
+    }
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0, // معرف الإشعار
+      '$title ${setTime.hour}:${setTime.minute}.${setTime.second}', // عنوان الإشعار
+      body, // محتوى الإشعار
+      scheduledDate, // وقت الإشعار
       platformChannelSpecifics,
-      payload: 'Test Payload',
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents:
+          DateTimeComponents.dayOfWeekAndTime, // تكرار أسبوعي
     );
   }
 
@@ -166,7 +248,7 @@ class NotificationServices {
       priority: Priority.high,
       styleInformation: DefaultStyleInformation(true, true),
     );
-    var iosChannelSpecifics = IOSNotificationDetails();
+    var iosChannelSpecifics = DarwinNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         android: androidChannelSpecifics, iOS: iosChannelSpecifics);
     await flutterLocalNotificationsPlugin.periodicallyShow(
@@ -176,6 +258,7 @@ class NotificationServices {
       repeatInterval,
       platformChannelSpecifics,
       payload: 'Test Payload',
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
@@ -213,7 +296,7 @@ class NotificationServices {
       timeoutAfter: 10000,
       styleInformation: DefaultStyleInformation(true, true),
     );
-    var iosChannelSpecifics = IOSNotificationDetails();
+    var iosChannelSpecifics = DarwinNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
       android: androidChannelSpecifics,
       iOS: iosChannelSpecifics,
@@ -221,7 +304,7 @@ class NotificationServices {
     flutterLocalNotificationsPlugin.zonedSchedule(
         0, title, body, time, platformChannelSpecifics,
         payload: body,
-        androidAllowWhileIdle: true,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dateAndTime);

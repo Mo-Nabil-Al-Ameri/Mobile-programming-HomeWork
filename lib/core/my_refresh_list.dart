@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/core/Helper/AppConstant/AppTextStyleConstant.dart';
 
 import 'package:get/get.dart';
-import 'package:my_shop_app/app/core/Helper/AppConstant/AppTextStyleConstant.dart';
 
 /// 封装下拉刷新与加载更多
 class CustomListView extends StatefulWidget {
